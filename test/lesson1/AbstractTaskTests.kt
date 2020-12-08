@@ -120,7 +120,7 @@ abstract class AbstractTaskTests : AbstractFileTests() {
         }
 
         try {
-            sortTemperatures("input/temp_in2.txt", "temp.txt")
+            sortTemperatures("input/temp_in3.txt", "temp.txt")
             assertFileContent(
                 "temp.txt",
                 """

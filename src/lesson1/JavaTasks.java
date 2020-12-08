@@ -152,6 +152,7 @@ public class JavaTasks {
      * 2
      * 2
      */
+
     //Асимптотика - O(N)
     //Ресурсоемкость - O(N)
     static public void sortSequence(String inputName, String outputName) {
