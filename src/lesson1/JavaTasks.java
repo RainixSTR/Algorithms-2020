@@ -2,10 +2,7 @@ package lesson1;
 
 import kotlin.NotImplementedError;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -122,7 +119,7 @@ public class JavaTasks {
             for (int value : Sorts.countingSort(arrTemperature, 7730))
                 writer.write((float) (value - lowLimit) / 10 + "\n");
         } catch (IOException e) {
-            throw new NotImplementedError();
+            e.printStackTrace();
         }
     }
 

@@ -293,7 +293,7 @@ abstract class AbstractTaskTests : AbstractFileTests() {
         }
 
         try {
-            sortSequence("input/seq_in6.txt", "temp.txt")
+            sortSequence("input/seq_in7.txt", "temp.txt")
             assertFileContent(
                 "temp.txt",
                 """

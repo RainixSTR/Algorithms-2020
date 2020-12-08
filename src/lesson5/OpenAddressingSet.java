@@ -17,6 +17,10 @@ public class OpenAddressingSet<T> extends AbstractSet<T> {
 
     private int size = 0;
 
+    private enum Condition {
+        REMOVED
+    }
+
     private int startingIndex(Object element) {
         return element.hashCode() & (0x7FFFFFFF >> (31 - bits));
     }
@@ -63,21 +67,20 @@ public class OpenAddressingSet<T> extends AbstractSet<T> {
      * но в данном случае это было введено для упрощения кода.
      */
     @Override
-    public boolean add(T t) {
-        int startingIndex = startingIndex(t);
+    public boolean add(T element) {
+        int startingIndex = startingIndex(element);
         int index = startingIndex;
         Object current = storage[index];
-        while (current != null) {
-            if (current.equals(t)) {
+        while (current != null && current != Condition.REMOVED) {
+            if (current == element) {
                 return false;
             }
             index = (index + 1) % capacity;
-            if (index == startingIndex) {
+            if (index == startingIndex)
                 throw new IllegalStateException("Table is full");
-            }
             current = storage[index];
         }
-        storage[index] = t;
+        storage[index] = element;
         size++;
         return true;
     }
@@ -93,9 +96,25 @@ public class OpenAddressingSet<T> extends AbstractSet<T> {
      *
      * Средняя
      */
+    //Асимптотика: O(N)
     @Override
-    public boolean remove(Object o) {
-        return super.remove(o);
+    public boolean remove(Object element) {
+        int startingIndex = startingIndex(element);
+        int index = startingIndex;
+        T current = (T) storage[index];
+        while (current != null) {
+            if (current.equals(element)) {
+                storage[index] = Condition.REMOVED;
+                size--;
+                return true;
+            }
+            index = (index + 1) % capacity;
+            if (index == startingIndex) {
+                return false;
+            }
+            current = (T) storage[index];
+        }
+        return false;
     }
 
     /**
@@ -108,10 +127,46 @@ public class OpenAddressingSet<T> extends AbstractSet<T> {
      *
      * Средняя (сложная, если поддержан и remove тоже)
      */
+
     @NotNull
     @Override
     public Iterator<T> iterator() {
-        // TODO
-        throw new NotImplementedError();
+        return new OpenAddressingSetIterator();
+    }
+
+    public class OpenAddressingSetIterator implements Iterator<T> {
+
+        T lastNext = null;
+        int count = 0;
+        int index = 0;
+
+        @Override
+        public boolean hasNext() {
+            return count < size;
+        }
+
+        //Асимптотика: O(N)
+        @Override
+        public T next() {
+            if (!hasNext())
+                throw new IllegalStateException();
+            while (storage[index] == null || storage[index] == Condition.REMOVED) {
+                index++;
+            }
+            lastNext = (T) storage[index];
+            count++;
+            index++;
+            return lastNext;
+        }
+
+        @Override
+        public void remove() {
+            if (lastNext == null)
+                throw new IllegalStateException();
+            storage[index - 1] = Condition.REMOVED;
+            lastNext = null;
+            count--;
+            size--;
+        }
     }
 }
