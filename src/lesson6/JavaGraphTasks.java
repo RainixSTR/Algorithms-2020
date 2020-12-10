@@ -2,8 +2,10 @@ package lesson6;
 
 import kotlin.NotImplementedError;
 
+import java.util.ArrayDeque;
 import java.util.List;
 import java.util.Set;
+import java.util.Deque;
 
 @SuppressWarnings("unused")
 public class JavaGraphTasks {
@@ -33,9 +35,7 @@ public class JavaGraphTasks {
      * Справка: Эйлеров цикл -- это цикл, проходящий через все рёбра
      * связного графа ровно по одному разу
      */
-    public static List<Graph.Edge> findEulerLoop(Graph graph) {
-        throw new NotImplementedError();
-    }
+    public static List<Graph.Edge> findEulerLoop(Graph graph) { throw new NotImplementedError(); }
 
     /**
      * Минимальное остовное дерево.
@@ -119,8 +119,35 @@ public class JavaGraphTasks {
      *
      * Ответ: A, E, J, K, D, C, H, G, B, F, I
      */
+    //V - количество вершин, E - количество ребер
+    //Асимптотика - O(V + E)
+    //Ресурсоемкость - O(V)
     public static Path longestSimplePath(Graph graph) {
-        throw new NotImplementedError();
+
+        if(graph.getVertices().isEmpty()) return new Path();
+
+        Set<Graph.Vertex> vertexes = graph.getVertices();
+        Deque<Path> path = new ArrayDeque<>();
+        vertexes.forEach(vertex -> path.add(new Path(vertex)));
+        Path longestPath = path.poll();
+        Path currentPath;
+
+        while ((currentPath = path.poll()) != null) {
+            List<Graph.Vertex> currentPathVertexes = currentPath.getVertices();
+            Set<Graph.Vertex> neighboursLastNode = graph
+                    .getNeighbors(currentPathVertexes
+                    .get(currentPathVertexes.size() - 1));
+
+            for (Graph.Vertex vertex : neighboursLastNode) {
+                if (!currentPath.contains(vertex)) {
+                    Path newPath = new Path(currentPath, graph, vertex);
+                    path.add(newPath);
+                    if (newPath.getLength() > longestPath.getLength())
+                        longestPath = newPath;
+                }
+            }
+        }
+        return longestPath;
     }
 
 
