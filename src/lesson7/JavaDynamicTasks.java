@@ -80,6 +80,8 @@ public class JavaDynamicTasks {
     // Ресурсоемкость O(N)
     public static List<Integer> longestIncreasingSubSequence(List<Integer> list) {
 
+        if (list.isEmpty()) return list;
+
         int listSize = list.size();
 
         int[] d = new int[listSize + 1];
